@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  List<Quiz>? quizList;
+  List<Quiz>? ques;
   int count = 0;
   int wrong = 0;
   String text = "";
@@ -26,14 +26,14 @@ class _HomePageState extends State<HomePage> {
   void fetch() async {
     List list = await Api().fetch('quizzes');
     setState(() {
-     quizList = list.map((item) =>  Quiz.fromJson(item)).toList();
+     ques = list.map((item) =>  Quiz.fromJson(item)).toList();
 
     });
   }
 
   void guess(String choice, int ans) {
     setState(() {
-      if (quizList![count].choices[ans] == choice) {
+      if (ques![count].choices[ans] == choice) {
         text = "เก่งมากครับ";
       } else {
         text = "ตอบผิดครับ";
@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
     Timer time = Timer(Duration(seconds: 1), () {
       setState(() {
         text = "";
-        if (quizList![count].choices[ans] == choice) {
+        if (ques![count].choices[ans] == choice) {
           count++;
         } else {
           wrong++;
@@ -63,28 +63,23 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: quizList != null && count < quizList!.length
-          ?buildQuiz() : quizList != null && count == quizList!.length
+      body: ques != null && count < ques!.length
+          ?buildQuiz() : ques != null && count == ques!.length
           ?buildTryAgain()
           :const Center(child: CircularProgressIndicator(),),
     );
   }
   Widget buildTryAgain(){
+    CrossAxisAlignment.center;
     return Center(
-      child: Column(
-        children: [
-          Text('End'),
-          Text('ทายผิด ${wrong}'),
-          ElevatedButton(
-              onPressed: (){
-                setState(() {
-                  wrong =0 ;
-                  count =0;
-                  quizList = null;
-                  fetch();
-                });
-              }, child: Text('New'),)
-        ]
+
+      child: Center(
+        child: Column(
+          children: [
+            Text('End'),
+            Text('ทายผิด ${wrong}'),
+          ]
+        ),
       ),
     );
   }
@@ -95,10 +90,10 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Image.network(quizList![count].image_url, fit: BoxFit.cover),
+            Image.network(ques![count].image_url, fit: BoxFit.cover),
             Column(
               children: [
-                for (int i = 0; i < quizList![count].choices.length; i++)
+                for (int i = 0; i < ques![count].choices.length; i++)
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -106,8 +101,8 @@ class _HomePageState extends State<HomePage> {
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () =>
-                                guess(quizList![count].choices[i].toString(),quizList![count].answer),
-                            child: Text(quizList![count].choices[i]),
+                                guess(ques![count].choices[i].toString(),ques![count].answer),
+                            child: Text(ques![count].choices[i]),
                           ),
                         ),
                       ],
